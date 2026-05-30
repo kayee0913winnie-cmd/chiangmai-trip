@@ -5,7 +5,7 @@
   <title>Chiang Mai Trip Planner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDK (compat version) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
@@ -23,24 +23,25 @@
     textarea {
       width: 100%;
       height: 150px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       padding: 10px;
       font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      background: #2d89ef;
+      padding: 15px;
+      font-size: 18px;
+      background: #4e83d8;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
     }
 
-    .status {
-      margin-top: 10px;
-      text-align: center;
+    button:active {
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -53,18 +54,15 @@
 
   <button onclick="saveData()">Save to Cloud</button>
 
-  <div class="status" id="status"></div>
-
   <script>
-    // 🔥 替換成你自己 Firebase 設定
-    cconst firebaseConfig = {
-  apiKey: "AIzaSyDVhhl0eGYZFBa8DluJVTSSAHBik51ie4M",
-  authDomain: "chiangmaitrip-2a461.firebaseapp.com",
-  projectId: "chiangmaitrip-2a461",
-  storageBucket: "chiangmaitrip-2a461.firebasestorage.app",
-  messagingSenderId: "739453458567",
-  appId: "1:739453458567:web:f91ef60b3421d643a4c022"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVhhl0eGYZFBa8DluJVTSSAHBik51ie4M",
+      authDomain: "chiangmaitrip-2a461.firebaseapp.com",
+      projectId: "chiangmaitrip-2a461",
+      storageBucket: "chiangmaitrip-2a461.firebasestorage.app",
+      messagingSenderId: "739453458567",
+      appId: "1:739453458567:web:f91ef60b3421d643a4c022"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -72,13 +70,21 @@
     function saveData() {
       const text = document.getElementById("content").value;
 
+      if (!text.trim()) {
+        alert("Please enter something first.");
+        return;
+      }
+
       db.collection("itineraries").add({
         content: text,
-        createdAt: new Date()
-      }).then(() => {
-        document.getElementById("status").innerText = "✅ Saved successfully!";
-      }).catch((error) => {
-        document.getElementById("status").innerText = "❌ Error: " + error;
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        alert("✅ Saved successfully!");
+        document.getElementById("content").value = "";
+      })
+      .catch((error) => {
+        alert("❌ Error: " + error.message);
       });
     }
   </script>
